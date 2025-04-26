@@ -1,8 +1,10 @@
+# inventario.py
+
 class Inventario:
     def __init__(self):
         self.productos = []
 
-    # Sobrecarga por parámetros opcionales
+    # Sobrecarga de métodos mediante parámetros opcionales
     def agregar_producto(self, nombre, cantidad=1, precio=0.0):
         producto = {
             "nombre": nombre,
@@ -10,32 +12,64 @@ class Inventario:
             "precio": precio
         }
         self.productos.append(producto)
-        print(f"Producto agregado: {producto}")
+        print(f"Producto '{nombre}' agregado exitosamente.")
+
+    # Manejo de errores en la búsqueda
+    def buscar_producto(self, nombre):
+        try:
+            for producto in self.productos:
+                if producto["nombre"].lower() == nombre.lower():
+                    return producto
+            raise ValueError(f"Producto '{nombre}' no encontrado.")
+        except ValueError as e:
+            print(e)
 
     def mostrar_productos(self):
         if not self.productos:
             print("No hay productos en el inventario.")
-            return
+        else:
+            print("\nInventario actual:")
+            for producto in self.productos:
+                print(f"Nombre: {producto['nombre']}, Cantidad: {producto['cantidad']}, Precio: ${producto['precio']:.2f}")
 
-        for i, prod in enumerate(self.productos, 1):
-            print(f"{i}. {prod['nombre']} - Cantidad: {prod['cantidad']} - Precio: ${prod['precio']}")
+# ------------------ PROGRAMA PRINCIPAL ------------------
 
-    def buscar_producto(self, nombre):
-        try:
-            resultados = [p for p in self.productos if p["nombre"].lower() == nombre.lower()]
-            if resultados:
-                print("Producto encontrado:", resultados[0])
-            else:
-                raise ValueError("Producto no encontrado.")
-        except ValueError as e:
-            print("Error:", e)
+def menu():
+    inventario = Inventario()
 
+    while True:
+        print("\n--- Menú de Inventario ---")
+        print("1. Agregar producto")
+        print("2. Buscar producto")
+        print("3. Mostrar inventario")
+        print("4. Salir")
 
-# Ejemplo de uso
-inv = Inventario()
-inv.agregar_producto("Lapicero")
-inv.agregar_producto("Cuaderno", 3)
-inv.agregar_producto("Regla", 2, 1.5)
-inv.mostrar_productos()
-inv.buscar_producto("Cuaderno")
-inv.buscar_producto("Borrador")  # genera un error controlado
+        opcion = input("Seleccione una opción (1-4): ")
+
+        if opcion == '1':
+            nombre = input("Ingrese el nombre del producto: ")
+            try:
+                cantidad = int(input("Ingrese la cantidad (opcional, default 1): ") or 1)
+                precio = float(input("Ingrese el precio (opcional, default 0.0): ") or 0.0)
+                inventario.agregar_producto(nombre, cantidad, precio)
+            except ValueError:
+                print("Error: cantidad y precio deben ser numéricos.")
+        
+        elif opcion == '2':
+            nombre = input("Ingrese el nombre del producto a buscar: ")
+            producto = inventario.buscar_producto(nombre)
+            if producto:
+                print(f"Producto encontrado: {producto}")
+        
+        elif opcion == '3':
+            inventario.mostrar_productos()
+        
+        elif opcion == '4':
+            print("Saliendo del programa. ¡Hasta luego!")
+            break
+        
+        else:
+            print("Opción no válida. Por favor ingrese un número entre 1 y 4.")
+
+if __name__ == "__main__":
+    menu()
